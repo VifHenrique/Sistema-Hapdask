@@ -1,0 +1,35 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Solicitações de acesso: qualquer pessoa pode criar (usuário público)
+    // e ler/atualizar (necessário para o painel admin e tempo real do usuário).
+    // Para produção, recomenda-se restringir update/delete via Firebase Auth
+    // (ver observações no README).
+    match /hdp_registros/{docId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if true;
+    }
+
+    // Colaboradores: leitura pública (usuário precisa ver o atendente disponível),
+    // escrita liberada para o painel admin.
+    match /hdp_colaboradores/{docId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Chats: leitura/escrita pública para permitir o chat em tempo real
+    // entre usuário e suporte.
+    match /hdp_chats/{docId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Configurações (ex.: senha do admin)
+    match /hdp_config/{docId} {
+      allow read: if true;
+      allow write: if true;
+    }
+  }
+}

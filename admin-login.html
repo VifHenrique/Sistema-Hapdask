@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HelpDesk Pro — Admin Login</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="center-page">
+<div class="login-card">
+  <div class="logo"><div class="logo-icon">🔐</div>HelpDesk Pro</div>
+  <div class="title">Acesso Administrativo</div>
+  <div class="sub">Área restrita. Insira suas credenciais de admin.</div>
+  <div class="field"><label>Usuário Admin</label>
+    <input id="in-user" type="text" placeholder="admin" autocomplete="off"></div>
+  <div class="field"><label>Senha</label>
+    <input id="in-pass" type="password" placeholder="••••••••"
+      onkeydown="if(event.key==='Enter')login()"></div>
+  <span class="err" id="err">Usuário ou senha incorretos.</span>
+  <button class="btn-full" onclick="login()" style="margin-top:8px;">🔐 Entrar no Painel</button>
+  <a class="back" href="index.html">← Voltar ao início</a>
+  <div class="hint">💡 Credenciais padrão: <strong>admin</strong> / <strong>admin123</strong></div>
+</div>
+
+<style>
+.err{font-size:12px;color:var(--danger);margin-top:4px;display:none;text-align:center;}
+.err.show{display:block;}
+</style>
+
+<script type="module">
+import { DB } from "./js/firebase.js";
+
+window.login = async function login() {
+  const u = document.getElementById('in-user').value.trim();
+  const p = document.getElementById('in-pass').value.trim();
+  const btn = document.querySelector('.btn-full');
+  btn.disabled = true; btn.style.opacity = '.7';
+  try {
+    const senha = await DB.getAdminSenha();
+    if (u === 'admin' && p === senha) {
+      sessionStorage.setItem('hdp_auth', '1');
+      window.location.href = 'painel.html';
+    } else {
+      document.getElementById('err').classList.add('show');
+    }
+  } catch (e) {
+    console.error('Erro ao validar login:', e);
+    document.getElementById('err').textContent = 'Erro ao conectar. Tente novamente.';
+    document.getElementById('err').classList.add('show');
+  } finally {
+    btn.disabled = false; btn.style.opacity = '1';
+  }
+};
+</script>
+</body>
+</html>

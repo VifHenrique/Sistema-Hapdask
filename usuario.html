@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HelpDesk Pro — Área do Usuário</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header>
+  <div class="logo"><div class="logo-icon">🎯</div>HelpDesk Pro</div>
+  <span style="font-size:12px;color:var(--muted);">Portal do Usuário</span>
+</header>
+<main>
+  <!-- FORM -->
+  <div class="form-side">
+    <div class="card" id="card">
+      <!-- STEP 0 -->
+      <div id="s0">
+        <div class="step-icon">👤</div>
+        <div class="step-title">Bem-vindo</div>
+        <div class="step-desc">Informe suas credenciais para iniciar o atendimento.</div>
+        <div class="dual">
+          <div class="field"><label>Login / Usuário</label>
+            <input id="in-login" type="text" placeholder="usuario@empresa.com" autocomplete="off"></div>
+          <div class="field"><label>Senha</label>
+            <input id="in-senha" type="password" placeholder="••••••••">
+            <span class="err" id="err0">Preencha login e senha.</span></div>
+        </div>
+        <button class="btn btn-primary" onclick="next()">Entrar →</button>
+      </div>
+      <!-- STEPS 1-7 (gerados via JS) -->
+      <div id="steps-wrap"></div>
+
+      <!-- TELA DE AGUARDO -->
+      <div id="s-wait" style="display:none;">
+        <div class="wait-icon">⏳</div>
+        <div class="wait-title">Solicitação enviada</div>
+        <div class="wait-desc">Aguardando aprovação do suporte.</div>
+        <div class="wait-desc" style="margin-top:6px;">Você será notificado automaticamente assim que houver uma resposta — não é necessário atualizar a página.</div>
+        <div class="wait-status-box">
+          <span class="badge-status s-aguardando aguardando"><span class="sdot aguardando"></span>Aguardando aprovação</span>
+        </div>
+        <div class="sum-box" id="wait-sum-box" style="margin-top:18px;"></div>
+      </div>
+
+      <!-- RESULTADO (aprovado / rejeitado) -->
+      <div id="s-result" style="display:none;">
+        <div id="result-box"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div class="chat-side">
+    <div class="chat-header" id="chat-header">
+      <div class="avatar" id="agent-avatar">🎯</div>
+      <div class="agent-info">
+        <div class="name" id="agent-name">Suporte HelpDesk</div>
+        <div class="role" id="agent-role">Atendimento ao usuário</div>
+        <div class="status-pill">
+          <span class="sdot disponivel" id="agent-sdot"></span>
+          <span id="agent-status-txt">Disponível</span>
+        </div>
+      </div>
+    </div>
+    <div class="chat-msgs" id="chat-msgs">
+      <div class="msg bot">
+        <div class="bubble">👋 Olá! Seja bem-vindo ao HelpDesk Pro. Preencha seus dados no formulário ao lado e depois pode me chamar aqui para qualquer dúvida!</div>
+        <div class="msg-time" id="init-time"></div>
+      </div>
+    </div>
+    <div class="chat-input-area">
+      <textarea id="chat-input" placeholder="Digite sua mensagem..." rows="1"
+        onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <button id="send-btn" onclick="sendMsg()">
+        <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
+</main>
+
+<script type="module" src="js/usuario.js"></script>
+</body>
+</html>

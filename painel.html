@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HelpDesk Pro — Painel Admin</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header>
+  <div class="logo"><div class="logo-icon">🎯</div>HelpDesk Pro · Admin</div>
+  <div class="hdr-right">
+    <span class="live-dot"></span>
+    <span style="font-size:12px;color:var(--muted);margin-right:4px;">Ao vivo</span>
+    <button class="btn-sm" onclick="DB.exportJSON()">⬇ Exportar</button>
+    <button class="btn-sm btn-red" onclick="sair()">Sair 🔒</button>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('dash')" id="tab-dash">📊 Dashboard</button>
+  <button class="tab" onclick="switchTab('registros')" id="tab-registros">
+    📋 Solicitações <span class="tab-badge" id="badge-reg">0</span>
+  </button>
+  <button class="tab" onclick="switchTab('colaboradores')" id="tab-colaboradores">👥 Colaboradores</button>
+  <button class="tab" onclick="switchTab('chat')" id="tab-chat">
+    💬 Chat Suporte <span class="tab-badge" id="badge-chat">0</span>
+  </button>
+</div>
+
+<div class="content">
+
+  <!-- ── DASHBOARD ── -->
+  <div class="tab-panel active" id="panel-dash">
+    <div class="stats" id="stats-box"></div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;">
+      <div style="font-weight:700;margin-bottom:16px;font-size:14px;">⏱ Últimas Solicitações</div>
+      <table><thead><tr><th>Nome</th><th>Login</th><th>Departamento</th><th>Nível</th><th>Status</th><th>Quando</th></tr></thead>
+      <tbody id="dash-tbody"></tbody></table>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;">
+      <div style="font-weight:700;margin-bottom:16px;font-size:14px;">👥 Colaboradores Ativos</div>
+      <div id="dash-colabs"></div>
+    </div>
+  </div>
+
+  <!-- ── REGISTROS / SOLICITAÇÕES ── -->
+  <div class="tab-panel" id="panel-registros">
+    <div class="toolbar">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input id="search-reg" type="text" placeholder="Buscar por nome, login, CPF, departamento..." oninput="renderRegistros()">
+      </div>
+      <select class="filter-sel" id="fil-status" onchange="renderRegistros()">
+        <option value="">Todos os status</option>
+        <option value="aguardando">⏳ Aguardando</option>
+        <option value="aprovado">✅ Aprovado</option>
+        <option value="rejeitado">❌ Rejeitado</option>
+      </select>
+      <select class="filter-sel" id="fil-nivel" onchange="renderRegistros()">
+        <option value="">Todos os níveis</option>
+        <option>Visualizador</option><option>Operador</option>
+        <option>Supervisor</option><option>Administrador</option>
+      </select>
+      <select class="filter-sel" id="fil-depto" onchange="renderRegistros()">
+        <option value="">Todos os deptos</option>
+      </select>
+    </div>
+    <div id="reg-table-wrap" style="overflow-x:auto;">
+      <table><thead><tr>
+        <th>#</th><th>Nome</th><th>Login</th><th>CPF</th><th>Departamento</th><th>Cargo</th>
+        <th>Telefone</th><th>Ramal</th><th>Nível</th><th>Status</th><th>Data/Hora</th><th>Ações</th>
+      </tr></thead>
+      <tbody id="reg-tbody"></tbody></table>
+      <div class="empty" id="reg-empty" style="display:none;">
+        <div class="empty-icon">📋</div>
+        <div class="empty-title">Nenhuma solicitação encontrada</div>
+        <div style="font-size:12px;color:var(--muted);">As solicitações dos usuários aparecerão aqui em tempo real.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── COLABORADORES ── -->
+  <div class="tab-panel" id="panel-colaboradores">
+    <div class="form-card">
+      <div class="form-title">➕ Adicionar Colaborador</div>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:18px;">
+        <div class="photo-preview" id="photo-prev" onclick="document.getElementById('foto-inp').click()">📷
+          <input type="file" id="foto-inp" accept="image/*" style="display:none" onchange="previewFoto(this)">
+        </div>
+        <div style="font-size:12px;color:var(--muted);">Clique para adicionar foto<br>
+          <span style="font-size:11px;">JPG, PNG até 2MB</span></div>
+      </div>
+      <div class="form-grid">
+        <div class="field"><label>Nome Completo *</label><input id="c-nome" type="text" placeholder="Nome do atendente"></div>
+        <div class="field"><label>E-mail *</label><input id="c-email" type="email" placeholder="email@empresa.com"></div>
+        <div class="field"><label>Cargo</label><input id="c-cargo" type="text" placeholder="Analista de Suporte"></div>
+        <div class="field"><label>Status</label>
+          <select id="c-status">
+            <option value="disponivel">🟢 Disponível</option>
+            <option value="ocupado">🟡 Ocupado</option>
+            <option value="ausente">⚫ Ausente</option>
+          </select>
+        </div>
+        <div class="field full"><label>Descrição / Especialidade</label>
+          <textarea id="c-desc" placeholder="Ex.: Especialista em acesso e infraestrutura"></textarea>
+        </div>
+      </div>
+      <button class="btn-full" onclick="addColab()">➕ Adicionar Colaborador</button>
+    </div>
+    <div class="colab-grid" id="colab-grid"></div>
+    <div class="empty" id="colab-empty" style="display:none;">
+      <div class="empty-icon">👥</div>
+      <div class="empty-title">Nenhum colaborador cadastrado</div>
+    </div>
+  </div>
+
+  <!-- ── CHAT ── -->
+  <div class="tab-panel" id="panel-chat">
+    <div class="chat-layout">
+      <div class="chat-list">
+        <div class="chat-list-header">💬 Conversas</div>
+        <div id="chat-list-items"></div>
+      </div>
+      <div class="chat-window" id="chat-window">
+        <div class="no-chat"><div class="no-chat-icon">💬</div>Selecione uma conversa</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL DETALHES -->
+<div class="overlay" id="overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-title"><span>Detalhes da Solicitação</span>
+      <button class="close-btn" onclick="closeModal()">✕</button></div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script type="module" src="js/painel.js"></script>
+</body>
+</html>

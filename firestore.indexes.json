@@ -1,0 +1,19 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "hdp_registros",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "hdp_chats",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "clienteNome", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
